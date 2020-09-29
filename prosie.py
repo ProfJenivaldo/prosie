@@ -4,17 +4,34 @@ def mols(i,t):
     #Converte valores de corrente em número de mols de elétrons.
     return (i * t) / 96500
 
+def corrente(n,nox,t):
+    return (n*nox*96500) / t
+
+def tempo(n,nox,i):
+    return (n*nox*96500) / i
+
 def massa(n,nox,MM):
-    return (n * MM) / nox
-    
+    return (n/nox) * MM
+
+def massa_mol(m,MM):
+    return m/MM
+
 def resposta_corrosao01 (n,MM,nox):
     print()
-    print("Número de mols de elétrons envolvidos:","%.2f" % n,"mol(s)")
+    print("Número de mols de elétrons envolvidos:","%.5f" % n,"mol(s)")
     print("Massa molar:",MM,"g/mol")
     print("Número de oxidação:",nox)
     print()
-    print("Variação de massa:","%.2f" % massa(n,nox,MM),"g")
-    
+    print("Variação de massa:","%.5f" % massa(n,nox,MM),"g")
+
+def resposta_nmols(dm):
+    print()
+    print("Número de mols:")
+    print(" - Alumínio:","%.5f" % massa_mol(dm,27),"mol(s)")
+    print(" - Ferro:","%.5f" % massa_mol(dm,56),"mol(s)")
+    print(" - Zinco:","%.5f" % massa_mol(dm,65),"mol(s)")
+    print()
+
 def lista_especies():
     print()
     print("  [1] Li+/Li")
@@ -29,46 +46,12 @@ def lista_especies():
     print()
     
 def potencial_padrao(x):
-    if x == 1:
-        p = -3.04
-    if x == 2:
-        p = -0.76
-    if x == 3:
-        p = 0.00
-    if x == 4:
-        p = 0.8
-    if x == 5:
-        p = 2.87
-    if x == 6:
-        p = -2.92
-    if x == 7:
-        p = -0.13
-    if x == 8:
-        p = 0.34
-    if x == 9:
-        p = 1.36
-    return float(p)
+    plist = [-3.04, -0.76, 0.00, 0.8, 2.87, -2.92, -0.13, 0.34, 1.36]
+    return float(plist[x-1])
 
 def eletro_espec(x):
-    if x == 1:
-        e = 1
-    if x == 2:
-        e = 2
-    if x == 3:
-        e = 2
-    if x == 4:
-        e = 1
-    if x == 5:
-        e = 2
-    if x == 6:
-        e = 1
-    if x == 7:
-        e = 2
-    if x == 8:
-        e = 2
-    if x == 9:
-        e = 2
-    return e
+    elist = [1, 2, 2, 1, 2, 1, 2, 2, 2]
+    return int(elist[x-1])
 
 def eletro_cations():
     print()
@@ -86,25 +69,8 @@ def eletro_cations():
     print()
 
 def potencial_cations(x):
-    if x == 1:
-        c = 0.85
-    if x == 2:
-        c = 0.80
-    if x == 3:
-        c = -0.40
-    if x == 4:
-        c = -0.13
-    if x == 5:
-        c = -0.44
-    if x == 6:
-        c = -0.76
-    if x == 7:
-        c = -1.66
-    if x == 8:
-        c = -2.71
-    if x == 9:
-        c = -2.87
-    return c
+    clist = [0.85, 0.80, -0.40, -0.13, -0.44, -0.76, -1.66, -2.71, -2.87]
+    return float(clist[x-1])
 
 def eletro_anions():
     print()
@@ -117,17 +83,8 @@ def eletro_anions():
     print()
 
 def potencial_anions(x):
-    if x == 1:
-        an = 1.36
-    if x == 2:
-        an = 0.53
-    if x == 3:
-        an = 0.96
-    if x == 4:
-        an = 0.2
-    if x == 5:
-        an = 2.87
-    return an
+    anlist = [1.36, 0.53, 0.96, 0.2, 2.87]
+    return float(anlist[x-1])
 
 print()
 print("==================================================================")
@@ -144,8 +101,10 @@ print("000        000   000    000000     00000000   000000000   00000000")
 print("===================================================================")
 print()
 print("PROGRAMA PARA SIMULAÇÃO DE PROCESSOS ELETROQUÍMICOS")
-#Versão 0.5
+#Versão 0.5.1
 print("Produzido por: Jenivaldo Lisboa")
+print()
+print("Olá Mundo!!!")
 print()
 print("Escolha o módulo que será iniciado:")
 print()
@@ -162,12 +121,13 @@ if a == 1:
     print()
     print("  [1] Pilha") #Determina a voltagem de uma pilha a partir da escolha das substâncias participantes.
     print("  [2] Eletrólise") #Apresenta os módulos ígnea e aquosa e determina o potencial e as espécies envolvidas no processo.
-    print("  [3] Corrosão") #Realiza cálculos simples de perda de massa para um determinado material escolhido - inserir opção comparativa.
+    print("  [3] Variação de massa") #Realiza cálculos simples de perda de massa para um determinado material escolhido - inserir opção comparativa.
     print()
     mod1 = 0
     while mod1 < 1 or mod1 > 3:
         mod1 = int(input("Digite um número: "))
     if mod1 == 1:
+        #Inicia o módulo básico para cálculo do potencial de uma pilha.
         print()
         print("Escolha o ânodo:")
         print(" - A espécie que sofre oxidação.")
@@ -186,12 +146,13 @@ if a == 1:
         pcat = potencial_padrao(catodo)
         pand = potencial_padrao(anodo)
         potencial = float(pcat) - float(pand)
-        print("Potencial do ânodo:",potencial_padrao(anodo),"V")
-        print("Potencial do cátodo:",potencial_padrao(catodo),"V")
         if potencial < 0:
             print("O valor do potencial resultou em",potencial,"V, indicando que neste sentido o processo não é espontâneo e, consequentemente, representa uma eletrólise. Inverta as espécies do ânodo e do cátodo que foram selecionadas previamente e o resultado será positivo.")
         else:
-            print("Potencial padrão:",potencial,"V")
+            print("Potencial do ânodo", end='\t')
+            print("Potencial do cátodo", end='\t')
+            print("Potencial padrão")
+            print('{:>10,.2f}'.format(potencial_padrao(anodo)),"V",'{:>22,.2f}'.format(potencial_padrao(catodo)),"V",'{:>20,.2f}'.format(potencial),"V")
     if mod1 == 2:
         #Inicia o módulo básico de eletrólise.
         print()
@@ -281,43 +242,93 @@ if a == 1:
                 print("Potencial do cátodo: 0.00 V.")
                 print("Diferença de potencial: - 0.40 V")
     if mod1 == 3:
-        #Inicia o módulo para testes de corrosão.
+        #Inicia o módulo para testes de variação de massa.
         print()
-        print("O teste a seguir tem como objetivo avaliar a variação de massa de")
-        print("um metal durante um processo eletrolítico")
+        print("Escolha o tipo de teste:")
         print()
-        print("Escolha o metal a ser utilizado na simulação:")
+        print("  [1] Simples")
+        print("  [2] Comparativo")
         print()
-        print("  [1] Alumínio")
-        print("  [2] Ferro (II)")
-        print("  [3] Ferro (III)")
-        print("  [4] Zinco")
-        print()
-        metal = 0
-        while metal < 1 or metal > 4:
-            metal = int(input("Digite um número: "))
-        print()
-        print("Determine o tempo e a corrente elétrica aplicada ao sistema.")
-        print()
-        i = int(input("Corrente elétrica (A): "))
-        t = int(input("Tempo (s): "))
-        n = mols(i,t)
-        if metal == 1:
-            nox = 3
-            MM = 27
-            resposta_corrosao01(n,MM,nox)
-        if metal == 2:
-            nox = 2
-            MM = 56
-            resposta_corrosao01(n,MM,nox)
-        if metal == 3:
-            nox = 3
-            MM = 56
-            resposta_corrosao01(n,MM,nox)
-        if metal == 4:
-            nox = 2
-            MM = 65
-            resposta_corrosao01(n,MM,nox)
+        corrosao = 0
+        while corrosao < 1 or corrosao > 2:
+            corrosao = int(input("Digite um número: "))
+        if corrosao == 1:
+            print("O teste a seguir tem como objetivo avaliar a variação de massa de")
+            print("um metal durante um processo eletrolítico")
+            print()
+            print("Escolha o metal a ser utilizado na simulação:")
+            print()
+            print("  [1] Alumínio")
+            print("  [2] Ferro (II)")
+            print("  [3] Ferro (III)")
+            print("  [4] Zinco")
+            print()
+            metal = 0
+            while metal < 1 or metal > 4:
+                metal = int(input("Digite um número: "))
+            print()
+            print("Determine o tempo e a corrente elétrica aplicada ao sistema.")
+            print()
+            i = int(input("Corrente elétrica (A): "))
+            t = int(input("Tempo (s): "))
+            n = mols(i,t)
+            if metal == 1:
+                nox = 3
+                MM = 27
+                resposta_corrosao01(n,MM,nox)
+            if metal == 2:
+                nox = 2
+                MM = 56
+                resposta_corrosao01(n,MM,nox)
+            if metal == 3:
+                nox = 3
+                MM = 56
+                resposta_corrosao01(n,MM,nox)
+            if metal == 4:
+                nox = 2
+                MM = 65
+                resposta_corrosao01(n,MM,nox)
+        if corrosao == 2:
+            print("Defina a variável de comparação:")
+            print()
+            print("  [1] Metal") #Compara a variação de massa para diferentes metais.
+            print("  [2] Corrente elétrica") #Compara a corrente elétrica relacionada a uma variação de massa em diferentes metais em um tempo determinado.
+            print("  [3] Tempo") #Compara o tempo necessário para que haja uma variação de massa em diferentes metais para um dado valor de corrente elétrica.
+            print()
+            variavel = 0
+            while variavel < 1 or variavel > 3:
+                variavel = int(input("Digite um número: "))
+            if variavel == 1:
+                i = int(input("Corrente elétrica (A): "))
+                t = int(input("Tempo (s): "))
+                n = mols(i,t)
+                print()
+                print("Número de mols de elétrons envolvidos:","%.2f" % n,"mol(s)")
+                print()
+                print("Variação de massa:")
+                print(" - Alumínio:","%.5f" % massa(n,3,27),"g")
+                print(" - Ferro (II):","%.5f" % massa(n,2,56),"g")
+                print(" - Ferro (III):","%.5f" % massa(n,3,56),"g")
+                print(" - Zinco:","%.5f" % massa(n,2,65),"g")
+            if variavel == 2:
+                dm = float(input("Variação de massa (g): "))
+                t = int(input("Tempo (s): "))
+                resposta_nmols(dm)
+                print("Corrente elétrica:")
+                print(" - Alumínio:","%.5f" % corrente(massa_mol(dm,27),3,t),"A")
+                print(" - Ferro (II):","%.5f" % corrente(massa_mol(dm,56),2,t),"A")
+                print(" - Ferro (III):","%.5f" % corrente(massa_mol(dm,56),3,t),"A")
+                print(" - Zinco:","%.5f" % corrente(massa_mol(dm,65),2,t),"A")
+            if variavel == 3:
+                dm = float(input("Variação de massa: "))
+                i = int(input("Corrente elétrica (A): "))
+                resposta_nmols(dm)
+                print("Tempo:")
+                print(" - Alumínio:","%.5f" % corrente(massa_mol(dm,27),3,i),"s")
+                print(" - Ferro (II):","%.5f" % corrente(massa_mol(dm,56),2,i),"s")
+                print(" - Ferro (III):","%.5f" % corrente(massa_mol(dm,56),3,i),"s")
+                print(" - Zinco:","%.5f" % corrente(massa_mol(dm,65),2,i),"s")
+                
 if a == 2:
 #Inicia o módulo avançado.
     print()
